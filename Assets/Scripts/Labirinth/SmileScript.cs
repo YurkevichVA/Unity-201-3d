@@ -14,8 +14,6 @@ public class SmileScript : MonoBehaviour
         float kh = Input.GetAxis("Horizontal");
         float kv = Input.GetAxis("Vertical");
 
-        Debug.Log($"{kh} {kv}");
-
         Vector3 right = _camera.transform.right;
         Vector3 forward = _camera.transform.forward;
         forward.y = 0;
@@ -23,8 +21,6 @@ public class SmileScript : MonoBehaviour
 
         Vector3 forceDirection = // new Vector3(kh, 0, kv);
             kh * right + kv * forward;
-
-        //Debug.Log(forceFactor * Time.deltaTime * forceDirection);
 
         body.AddForce(forceFactor * Time.deltaTime * forceDirection.normalized);
     }
