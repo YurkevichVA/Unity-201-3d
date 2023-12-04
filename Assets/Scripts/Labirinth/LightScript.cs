@@ -28,6 +28,19 @@ public class LightScript : MonoBehaviour
         {
             isDay = !isDay;
         }
+
+        if (Input.GetKey(KeyCode.Equals) && lightComponent.intensity < 1f)
+        {
+            float intensity = lightComponent.intensity + 0.01f;
+            if (intensity >= 1f) lightComponent.intensity = 1f;
+            else lightComponent.intensity = intensity;
+        }
+        if (Input.GetKey(KeyCode.Minus) && lightComponent.intensity > 0.01f)
+        {
+            float intensity = lightComponent.intensity - 0.01f;
+            if (intensity <= 0.01f) lightComponent.intensity = 0.01f;
+            else lightComponent.intensity = intensity;
+        }
     }
 
     private void SetDayLighting()

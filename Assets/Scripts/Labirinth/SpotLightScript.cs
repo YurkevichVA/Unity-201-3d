@@ -15,7 +15,7 @@ public class SpotLightScript : MonoBehaviour
 
     void Update()
     {
-        if(LabirinthState.cameraFirtsPerson && !LabirinthState.isDay)
+        if(LabirinthState.cameraFirstPerson && !LabirinthState.isDay)
         {
             transform.position = _camera.transform.position;
             transform.forward = _camera.transform.forward;
