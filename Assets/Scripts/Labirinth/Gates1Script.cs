@@ -5,19 +5,21 @@ using UnityEngine;
 
 public class Gates1Script : MonoBehaviour
 {
-    private float swingPeriod = 3f;
+    private float swingPeriod = 0.3f;
     void Start()
     {
-
+        LabirinthState.AddPropertyListener(nameof(LabirinthState.checkPoint1Passed), OnCheckPoint1Passed);
     }
 
     void Update()
     {
         float factor = Time.deltaTime / swingPeriod;
-        if (!LabirinthState.checkPoint1Passed)
-        {
-            factor *= 10f;
-        }
+
+        #region trash
+        //if (!LabirinthState.checkPoint1Passed)
+        //{
+        //    factor *= 10f;
+        //}
 
         //transform.Translate(factor * Vector3.down);
         //if (transform.position.y < -0.35)
@@ -30,11 +32,11 @@ public class Gates1Script : MonoBehaviour
         //    transform.position = new Vector3(transform.position.x, 0.18f, transform.position.z);
         //    swingPeriod = -swingPeriod;
         //}
+        #endregion
 
         Vector3 translateDirection = factor * Vector3.down;
         Vector3 newPosition = transform.position + translateDirection;
         
-
         if (newPosition.y <= -0.35f || newPosition.y >= 0.18f)
         {
             newPosition.y = Mathf.Clamp(newPosition.y, -0.35f, 0.18f);
@@ -42,5 +44,10 @@ public class Gates1Script : MonoBehaviour
         }
         
         transform.position = newPosition;
+    }
+
+    private void OnCheckPoint1Passed()
+    {
+        swingPeriod = 3f;
     }
 }

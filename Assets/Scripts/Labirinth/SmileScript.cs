@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SmileScript : MonoBehaviour
 {
-    [SerializeField] private GameObject _camera;
+    // [SerializeField] 
+    private GameObject _camera;
     [SerializeField] private Rigidbody body;
     [SerializeField] private GameObject cameraAnchor;
 
@@ -15,18 +17,31 @@ public class SmileScript : MonoBehaviour
     
     private float forceFactor = 500f;
 
+    private static SmileScript instance = null;
+
     private void Start()
     {
-        body = GetComponent<Rigidbody>();
-        anchorOffset = this.transform.position - cameraAnchor.transform.position;
-        if (!LabirinthState.isSoundsMuted)
+        if(instance != null)
         {
-            backgroundMusic.volume = LabirinthState.musicVolume;
-            backgroundMusic.Play();
+            // Цей код викликається якщо спавниться новий ГО у новій сцені, але є збережений об'єкт (instance) перенесений з попередньої сцени.
+            // Треба перенести з нього потрібні характеристики та видалити його, перейшовши на роботу з "місцевим" ГО
+            transform.position += new Vector3(0, instance.transform.position.y, 0);
+
+            if (SceneManager.GetActiveScene().name.Equals("SolarSystem"))
+            {
+                StartCoroutine("ReturnToMaze");
+            }
+
+            Destroy(instance.gameObject);
         }
-        LabirinthState.OnSoundsMuteChanged += SoundsMuteChanged;
-        LabirinthState.OnMusicVolumeChanged += MusicVolumeChanged;
-        LabirinthState.OnEffectsVolumeChanged += EffectsVolumeChanged;
+        
+        instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        _camera = Camera.main.gameObject;
+        body = GetComponent<Rigidbody>();
+        anchorOffset = transform.position - cameraAnchor.transform.position;
+        backgroundMusic.Play();
     }
 
     private void Update()
@@ -45,37 +60,19 @@ public class SmileScript : MonoBehaviour
         body.AddForce(forceFactor * Time.deltaTime * forceDirection.normalized);
 
         cameraAnchor.transform.position = this.transform.position - anchorOffset;
-
-        //if(backgroundMusic.volume != LabirinthState.musicVolume)
-        //{
-        //    backgroundMusic.volume = LabirinthState.musicVolume;
-        //}
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("CheckPoint"))
         {
-            if (!LabirinthState.isSoundsMuted)
-            {
-                // collectSound.volume = LabirinthState.effectsVolume;
-                collectSound.Play();
-            }
+            collectSound.Play();
         }
     }
 
-    public void SoundsMuteChanged()
+    private IEnumerator ReturnToMaze()
     {
-        backgroundMusic.mute = LabirinthState.isSoundsMuted;
-    }
-
-    public void MusicVolumeChanged()
-    {
-        backgroundMusic.volume = LabirinthState.musicVolume;
-    }
-
-    public void EffectsVolumeChanged()
-    {
-        collectSound.volume = LabirinthState.effectsVolume;
+        yield return new WaitForSeconds(3);
+        SceneManager.LoadScene("Labirinth");
     }
 }
